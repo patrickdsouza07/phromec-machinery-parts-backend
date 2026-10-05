@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface PartService {
 
-    public List<Part> getAllParts();
+    List<Part> getAllParts();
 }

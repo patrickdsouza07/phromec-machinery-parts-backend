@@ -20,7 +20,7 @@ import com.phromec.management.service.ProductService;
 public class TestMainController {
 	
 	@InjectMocks
-	private MainController mainController;
+	private UserController userController;
 	
 	@Mock
 	private ProductService productService;

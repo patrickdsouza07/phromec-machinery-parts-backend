@@ -1,8 +1,8 @@
 package com.phromec.management.controller;
 
-import com.phromec.management.model.LoginRequest;
-import com.phromec.management.model.LoginResponse;
-import com.phromec.management.model.RegisterRequest;
+import com.phromec.management.dto.LoginRequest;
+import com.phromec.management.dto.LoginResponse;
+import com.phromec.management.dto.RegisterRequest;
 import com.phromec.management.model.User;
 import com.phromec.management.service.AuthService;
 import com.phromec.management.service.UserService;

@@ -1,4 +1,3 @@
-
 package com.phromec.management.model;
 
 import java.time.LocalDateTime;

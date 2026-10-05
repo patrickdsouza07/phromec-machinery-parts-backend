@@ -1,8 +1,8 @@
 package com.phromec.management.service;
 
 import com.phromec.management.exception.RegistrationException;
-import com.phromec.management.model.LoginRequest;
-import com.phromec.management.model.LoginResponse;
+import com.phromec.management.dto.LoginRequest;
+import com.phromec.management.dto.LoginResponse;
 import com.phromec.management.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

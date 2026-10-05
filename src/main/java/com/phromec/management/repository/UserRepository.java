@@ -1,7 +1,7 @@
 package com.phromec.management.repository;
 
 import com.phromec.management.model.User;
-import com.phromec.management.model.UserResponse;
+import com.phromec.management.dto.UserResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

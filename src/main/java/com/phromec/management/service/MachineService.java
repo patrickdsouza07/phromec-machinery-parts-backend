@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface MachineService {
 
-    public List<Machine> getAllMachines();
+    List<Machine> getAllMachines();
 }

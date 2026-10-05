@@ -1,6 +1,6 @@
 package com.phromec.management.exception;
 
-import com.phromec.management.model.ApiError;
+import com.phromec.management.dto.ApiError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
