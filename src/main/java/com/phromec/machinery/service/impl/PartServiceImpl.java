@@ -5,11 +5,15 @@ import com.phromec.machinery.dto.part.PartResponse;
 import com.phromec.machinery.dto.part.PartSummaryProjection;
 import com.phromec.machinery.dto.part.PartSummaryResponse;
 import com.phromec.machinery.model.Material;
+import com.phromec.machinery.model.Inventory;
+import com.phromec.machinery.model.Pricing;
 import com.phromec.machinery.model.part.Part;
 import com.phromec.machinery.model.part.PartStatus;
 import com.phromec.machinery.model.part.PartVariant;
 import com.phromec.machinery.model.part.PartVariantMaterial;
 import com.phromec.machinery.repository.PartRepository;
+import com.phromec.machinery.repository.InventoryRepository;
+import com.phromec.machinery.repository.PricingRepository;
 import com.phromec.machinery.service.PartService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,6 +39,8 @@ import java.util.stream.Collectors;
 public class PartServiceImpl implements PartService {
 
     private final PartRepository partRepository;
+    private final InventoryRepository inventoryRepository;
+    private final PricingRepository pricingRepository;
 
     private static final Map<String, String> SORT_FIELDS =
             Map.of(
@@ -75,10 +83,21 @@ public class PartServiceImpl implements PartService {
 
         Page<Part> partPage = partRepository.searchParts(search, status, pageable);
 
-        List<PartResponse> parts = partPage
-                .getContent()
-                .stream()
-                .map(this::mapToResponse)
+        List<Part> pageParts = partPage.getContent();
+        List<Integer> partIds = pageParts.stream().map(Part::getPartId).toList();
+        Map<Integer, BigDecimal> quantities = new HashMap<>();
+        Map<Integer, BigDecimal> basePrices = new HashMap<>();
+        if (!partIds.isEmpty()) {
+            for (Object[] row : inventoryRepository.getAvailableQuantities(partIds)) {
+                quantities.put((Integer) row[0], (BigDecimal) row[1]);
+            }
+            for (Object[] row : pricingRepository.getCurrentBasePrices(partIds, LocalDate.now())) {
+                basePrices.putIfAbsent((Integer) row[0], (BigDecimal) row[1]);
+            }
+        }
+        List<PartResponse> parts = pageParts.stream()
+                .map(part -> mapToResponse(part, quantities.getOrDefault(part.getPartId(), BigDecimal.ZERO),
+                        basePrices.get(part.getPartId())))
                 .toList();
 
         PartSummaryResponse summary = buildSummary();
@@ -99,7 +118,11 @@ public class PartServiceImpl implements PartService {
         Part part = partRepository.findPartWithDetails(partId)
                 .orElseThrow(() -> new RuntimeException("Part not found with id: " + partId));
 
-        return mapToResponse(part);
+        BigDecimal quantity = inventoryRepository.getAvailableQuantities(List.of(partId)).stream()
+                .map(row -> (BigDecimal) row[1]).findFirst().orElse(BigDecimal.ZERO);
+        BigDecimal basePrice = pricingRepository.getCurrentBasePrices(List.of(partId), LocalDate.now()).stream()
+                .map(row -> (BigDecimal) row[1]).findFirst().orElse(null);
+        return mapToResponse(part, quantity, basePrice);
     }
 
     @Override
@@ -187,7 +210,7 @@ public class PartServiceImpl implements PartService {
                 .build();
     }
 
-    private PartResponse mapToResponse(Part part) {
+    private PartResponse mapToResponse(Part part, BigDecimal stockQuantity, BigDecimal basePrice) {
         Integer machineTypeId = null;
         String machineTypeName = null;
         String machineName = null;
@@ -227,9 +250,10 @@ public class PartServiceImpl implements PartService {
                 .category(category)
                 .material(materials)
                 .unitOfMeasure(part.getUnitOfMeasure())
-                .basePrice(new BigDecimal("185000.00"))
-                .stockStatus("In Stock")
-                .status(part.getStatus().getValue())
+                .basePrice(basePrice)
+                .stockQuantity(stockQuantity)
+                .stockStatus(stockQuantity.signum() > 0 ? "In Stock" : "Out of Stock")
+                .status(part.getStatus() == null ? null : part.getStatus().getValue())
                 .description(part.getDescription())
                 .build();
     }

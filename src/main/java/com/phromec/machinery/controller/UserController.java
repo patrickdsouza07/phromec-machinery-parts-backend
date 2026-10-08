@@ -3,22 +3,25 @@ package com.phromec.machinery.controller;
 import java.util.List;
 
 import com.phromec.machinery.model.Permission;
-import com.phromec.machinery.model.Product;
 import com.phromec.machinery.model.Role;
 import com.phromec.machinery.dto.UserResponse;
+import com.phromec.machinery.dto.UserCreateRequest;
+import com.phromec.machinery.dto.UserUpdateRequest;
 import com.phromec.machinery.service.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import com.phromec.machinery.exception.ProductAlreadyExistsException;
 
 @CrossOrigin(origins = "*", maxAge = 3600000)
 @RestController
@@ -26,7 +29,6 @@ import com.phromec.machinery.exception.ProductAlreadyExistsException;
 @RequiredArgsConstructor
 public class UserController {
 
-	private final ProductService productService;
 	private final UserService userService;
 	private final PermissionService permissionService;
 	private final RoleService roleService;
@@ -47,31 +49,23 @@ public class UserController {
 	@PreAuthorize("hasAuthority('PRODUCT_VIEW')")
 	public List<Permission> getAllPermissions(){ return permissionService.getAllPermissions(); }
 
-	
-	/*@GetMapping("/getProductsByCategory/{key}")
-	public Object getProductsByCategory(@PathVariable("key") String categoryName) throws JsonProcessingException{
-
-		List<Product> result= productService.getProductsByCategory(categoryName);
-		String listToJson = objectMapper.writeValueAsString(result);
-		return listToJson;
-	}*/
-
-	@PostMapping("/addProduct")
+	@PostMapping
 	@PreAuthorize("hasAuthority('PRODUCT_CREATE')")
-	public Product addProduct(@RequestBody Product productDetails) throws ProductAlreadyExistsException{
-		return productService.addProduct(productDetails);
+	public ResponseEntity<UserResponse> createUser(@RequestBody UserCreateRequest request) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
 	}
 
-	@PostMapping("updateProduct/{productId}")
+	@PutMapping
 	@PreAuthorize("hasAuthority('PRODUCT_UPDATE')")
-    public Product updateProduct(@RequestBody Product productDetails,@PathVariable("productId") String productId) {
-        return productService.updateProduct(productDetails, productId);
-    }
+	public ResponseEntity<UserResponse> updateUser(@RequestBody UserUpdateRequest request) {
+		return ResponseEntity.ok(userService.updateUser(request));
+	}
 
-	@DeleteMapping("deleteProduct/{productId}")
+	@DeleteMapping
 	@PreAuthorize("hasAuthority('PRODUCT_DELETE')")
-    public void deleteProduct(@PathVariable("productId") String productId) {
-        productService.deleteProduct(productId);
-    }
-	
+	public ResponseEntity<Void> deleteUser(@RequestParam Integer userId) {
+		userService.deleteUser(userId);
+		return ResponseEntity.noContent().build();
+	}
+
 }

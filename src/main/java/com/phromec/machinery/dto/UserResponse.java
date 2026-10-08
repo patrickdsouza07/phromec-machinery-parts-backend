@@ -12,19 +12,23 @@ public class UserResponse {
     private String email;
     private String phone;
     private String roleName;
+    private String username;
+    private Boolean status;
 
     public UserResponse(
             Integer userId,
             String fullName,
             String email,
             String phone,
-            String roleName
+            String roleName,
+            Boolean status
     ) {
         this.userId = userId;
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
         this.roleName = roleName;
+        this.status = status;
     }
 
 }
