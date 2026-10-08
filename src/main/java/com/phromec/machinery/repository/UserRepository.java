@@ -9,11 +9,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository
-        extends JpaRepository<User, Long> {
+        extends JpaRepository<User, Integer> {
 
     Optional<User> findByUsername(String username);
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
+    boolean existsByEmailAndUserIdNot(String email, Integer userId);
 
     @Query("""
         SELECT
