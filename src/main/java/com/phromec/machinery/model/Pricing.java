@@ -28,9 +28,6 @@ public class Pricing {
     private LocalDate effectiveFrom;
     @Column(name = "effective_to")
     private LocalDate effectiveTo;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "price_type", length = 8)
-    private PriceType priceType = PriceType.SELLING;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;

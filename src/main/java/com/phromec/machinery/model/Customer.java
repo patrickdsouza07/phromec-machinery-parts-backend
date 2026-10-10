@@ -57,6 +57,12 @@ public class Customer {
     @Column(name = "gst_number", length = 30)
     private String gstNumber;
 
+    @Column(name = "pan_number", length = 20)
+    private String panNumber;
+
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 10)
     private Status status = Status.Active;
