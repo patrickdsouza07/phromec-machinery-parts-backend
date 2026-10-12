@@ -22,7 +22,8 @@ public interface UserRepository
             u.fullName AS fullName,
             u.email AS email,
             u.phone AS phone,
-            r.roleName AS roleName
+            r.roleName AS roleName,
+            u.isActive AS status
         FROM User u
         JOIN u.role r
     """)

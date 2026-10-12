@@ -4,6 +4,7 @@ import com.phromec.machinery.exception.RegistrationException;
 import com.phromec.machinery.dto.LoginRequest;
 import com.phromec.machinery.dto.LoginResponse;
 import com.phromec.machinery.security.JwtService;
+import com.phromec.machinery.security.CustomUserDetails;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,6 +32,7 @@ public class AuthService {
                             request.getUsername(), request.getPassword()));
 
             UserDetails principal = (UserDetails) authentication.getPrincipal();
+            CustomUserDetails userDetails = (CustomUserDetails) principal;
             String token = jwtService.generateToken(principal);
 
             List<String> roles = authentication.getAuthorities().stream()
@@ -38,7 +40,8 @@ public class AuthService {
                     .filter(a -> a.startsWith("ROLE_"))
                     .toList();
 
-            return new LoginResponse(token, principal.getUsername(), roles);
+            return new LoginResponse(token, principal.getUsername(),
+                    userDetails.getUser().getFullName(), userDetails.getUser().getEmail(), roles);
         } catch (AuthenticationException ex) {
             throw new RegistrationException("Invalid username or password");
         }
