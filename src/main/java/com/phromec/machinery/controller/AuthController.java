@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "*", maxAge = 3600000)
 @RequestMapping("/phromecManagement/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {

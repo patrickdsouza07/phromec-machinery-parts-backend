@@ -116,7 +116,7 @@ public class PartServiceImpl implements PartService {
     @Transactional(readOnly = true)
     public PartResponse getPartById(Integer partId) {
         Part part = partRepository.findPartWithDetails(partId)
-                .orElseThrow(() -> new RuntimeException("Part not found with id: " + partId));
+                .orElseThrow(() -> new com.phromec.machinery.exception.ResourceNotFoundException("Part not found with id: " + partId));
 
         BigDecimal quantity = inventoryRepository.getAvailableQuantities(List.of(partId)).stream()
                 .map(row -> (BigDecimal) row[1]).findFirst().orElse(BigDecimal.ZERO);
@@ -147,7 +147,7 @@ public class PartServiceImpl implements PartService {
     @Override
     public Part updatePart(Integer partId, Part partDetails) {
         Part existing = partRepository.findById(partId)
-                .orElseThrow(() -> new RuntimeException("Part not found with id: " + partId));
+                .orElseThrow(() -> new com.phromec.machinery.exception.ResourceNotFoundException("Part not found with id: " + partId));
 
         if (partDetails.getPartCode() != null && !partDetails.getPartCode().equals(existing.getPartCode())) {
             if (partRepository.existsByPartCodeAndPartIdNot(partDetails.getPartCode(), partId)) {
@@ -182,7 +182,7 @@ public class PartServiceImpl implements PartService {
     @Override
     public void deletePart(Integer partId) {
         if (!partRepository.existsById(partId)) {
-            throw new RuntimeException("Part not found with id: " + partId);
+            throw new com.phromec.machinery.exception.ResourceNotFoundException("Part not found with id: " + partId);
         }
         partRepository.deleteById(partId);
     }

@@ -78,7 +78,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer updateCustomer(Integer customerId, CustomerRequest request) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found with id: " + customerId));
+                .orElseThrow(() -> new com.phromec.machinery.exception.ResourceNotFoundException("Customer not found with id: " + customerId));
         apply(customer, request);
         return customerRepository.save(customer);
     }
@@ -86,7 +86,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void deleteCustomer(Integer customerId) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found with id: " + customerId));
+                .orElseThrow(() -> new com.phromec.machinery.exception.ResourceNotFoundException("Customer not found with id: " + customerId));
         customerRepository.delete(customer);
     }
 

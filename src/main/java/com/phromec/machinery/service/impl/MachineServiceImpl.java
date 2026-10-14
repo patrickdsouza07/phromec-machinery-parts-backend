@@ -134,7 +134,7 @@ public class MachineServiceImpl implements MachineService {
         return machineRepository
                 .findMachineWithDetails(machineModelId)
                 .orElseThrow(() ->
-                        new RuntimeException(
+                        new com.phromec.machinery.exception.ResourceNotFoundException(
                                 "Machine model not found with id: " + machineModelId
                         )
                 );
@@ -173,7 +173,7 @@ public class MachineServiceImpl implements MachineService {
         MachineModel existing = machineRepository
                 .findById(machineModelId)
                 .orElseThrow(() ->
-                        new RuntimeException(
+                        new com.phromec.machinery.exception.ResourceNotFoundException(
                                 "Machine model not found with id: " + machineModelId
                         )
                 );
@@ -222,7 +222,7 @@ public class MachineServiceImpl implements MachineService {
     @Override
     public void deleteMachine(Integer machineModelId) {
         if (!machineRepository.existsById(machineModelId)) {
-            throw new RuntimeException(
+            throw new com.phromec.machinery.exception.ResourceNotFoundException(
                     "Machine model not found with id: " + machineModelId
             );
         }

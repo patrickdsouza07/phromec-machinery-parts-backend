@@ -214,7 +214,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository
                 .findById(orderId)
                 .orElseThrow(() ->
-                        new RuntimeException(
+                        new com.phromec.machinery.exception.ResourceNotFoundException(
                                 "Order not found with id: "
                                         + orderId
                         )
@@ -261,7 +261,7 @@ public class OrderServiceImpl implements OrderService {
                 orderRepository
                         .findById(orderId)
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new com.phromec.machinery.exception.ResourceNotFoundException(
                                         "Order not found with id: "
                                                 + orderId
                                 )
@@ -394,7 +394,7 @@ public class OrderServiceImpl implements OrderService {
 
         if (!orderRepository.existsById(orderId)) {
 
-            throw new RuntimeException(
+            throw new com.phromec.machinery.exception.ResourceNotFoundException(
                     "Order not found with id: "
                             + orderId
             );

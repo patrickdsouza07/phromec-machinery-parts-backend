@@ -182,7 +182,7 @@ public class MaterialServiceImpl implements MaterialService {
                 materialRepository
                         .findById(materialId)
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new com.phromec.machinery.exception.ResourceNotFoundException(
                                         "Material not found with id: "
                                                 + materialId
                                 )
@@ -247,7 +247,7 @@ public class MaterialServiceImpl implements MaterialService {
                 materialRepository
                         .findById(materialId)
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new com.phromec.machinery.exception.ResourceNotFoundException(
                                         "Material not found with id: "
                                                 + materialId
                                 )
@@ -361,7 +361,7 @@ public class MaterialServiceImpl implements MaterialService {
         if (!materialRepository
                 .existsById(materialId)) {
 
-            throw new RuntimeException(
+            throw new com.phromec.machinery.exception.ResourceNotFoundException(
                     "Material not found with id: "
                             + materialId
             );

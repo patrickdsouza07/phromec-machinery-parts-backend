@@ -40,30 +40,42 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public User registerUser(RegisterRequest request) {
+        if (request == null) {
+            throw new RegistrationException("Registration request is required");
+        }
 
-        System.out.println(request.toString());
+        String username = request.getUsername() == null ? "" : request.getUsername().trim();
+        String fullName = request.getFullName() == null ? "" : request.getFullName().trim();
+        String password = request.getPassword();
+        String email = request.getEmail() == null ? null : request.getEmail().trim();
+        if (username.isEmpty() || fullName.isEmpty() || password == null || password.isBlank()) {
+            throw new RegistrationException("Username, full name, and password are required");
+        }
+        if (email != null && email.isEmpty()) {
+            email = null;
+        }
 
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (userRepository.existsByUsername(username)) {
             throw new RegistrationException("Username already exists");
         }
 
-        if (request.getEmail() != null &&
-                userRepository.existsByEmail(request.getEmail())) {
+        if (email != null && userRepository.existsByEmail(email)) {
             throw new RegistrationException("Email already exists");
         }
 
 
-        Role role = roleRepository.findByRoleName(request.getRoleName())
+        // Public self-registration must never let a caller choose a privileged role.
+        Role role = roleRepository.findByRoleName("USER")
                 .orElseThrow(() ->
-                        new RegistrationException("Role not found"));
+                        new RegistrationException("Default USER role not found"));
 
         User user = new User();
-        user.setUsername(request.getUsername());
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
+        user.setUsername(username);
+        user.setFullName(fullName);
+        user.setEmail(email);
         user.setPhone(request.getPhone());
         user.setPasswordHash(
-                passwordEncoder.encode(request.getPassword()));
+                passwordEncoder.encode(password));
         user.setRole(role);
         user.setIsActive(true);
 
@@ -103,7 +115,7 @@ public class UserServiceImpl implements UserService {
         validateRequired(request.getRole(), "Role");
         if (request.getStatus() == null) throw new IllegalArgumentException("Status is required");
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + request.getUserId()));
+                .orElseThrow(() -> new com.phromec.machinery.exception.ResourceNotFoundException("User not found: " + request.getUserId()));
         String email = request.getEmail().trim();
         if (userRepository.existsByEmailAndUserIdNot(email, user.getUserId())) {
             throw new IllegalArgumentException("Email already exists");
@@ -119,7 +131,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(Integer userId) {
         if (!userRepository.existsById(userId)) {
-            throw new IllegalArgumentException("User not found: " + userId);
+            throw new com.phromec.machinery.exception.ResourceNotFoundException("User not found: " + userId);
         }
         userRepository.deleteById(userId);
     }

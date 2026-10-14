@@ -220,7 +220,7 @@ public class QuotationServiceImpl implements QuotationService {
                                 quotationId
                         )
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new com.phromec.machinery.exception.ResourceNotFoundException(
                                         "Quotation not found with id: "
                                                 + quotationId
                                 )
@@ -300,7 +300,7 @@ public class QuotationServiceImpl implements QuotationService {
                 quotationRepository
                         .findById(quotationId)
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new com.phromec.machinery.exception.ResourceNotFoundException(
                                         "Quotation not found with id: "
                                                 + quotationId
                                 )
@@ -476,7 +476,7 @@ public class QuotationServiceImpl implements QuotationService {
         if (!quotationRepository
                 .existsById(quotationId)) {
 
-            throw new RuntimeException(
+            throw new com.phromec.machinery.exception.ResourceNotFoundException(
                     "Quotation not found with id: "
                             + quotationId
             );

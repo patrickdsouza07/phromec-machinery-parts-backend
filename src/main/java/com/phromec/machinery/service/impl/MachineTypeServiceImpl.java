@@ -74,7 +74,7 @@ public class MachineTypeServiceImpl implements MachineTypeService {
     @Transactional
     public void deleteMachineType(Integer machineTypeId) {
         if (!machineTypeRepository.existsById(machineTypeId)) {
-            throw new RuntimeException("Machine type not found with id: " + machineTypeId);
+            throw new com.phromec.machinery.exception.ResourceNotFoundException("Machine type not found with id: " + machineTypeId);
         }
         machineTypeRepository.deleteById(machineTypeId);
     }
